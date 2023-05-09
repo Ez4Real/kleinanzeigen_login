@@ -1,5 +1,101 @@
-body {
-    display: flex;
-    text-align: center;
-    align-items: center;
+* {
+    box-sizing: border-box;
+    font-family: "Comic Sans MS";
 }
+
+body {
+    margin: 0;
+    background: rgb(244 242 239);
+    overflow: hidden;
+}
+
+h1,p,a,label,input {
+    margin: 0;
+    font-size: 16px;
+}
+
+body h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    font-weight: 400;
+    border-bottom: 1px solid lightgrey;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    transition: .3s;
+}
+
+input {
+    height: 35px;
+    padding: 0 15px;
+    border: 1px solid grey;
+    border-radius: 8px;
+    transition: .2s;
+}
+
+button {
+    display: block;
+    text-align: center;
+    width: 100%;
+    height: 43px;
+    font-size: 18px;
+    margin-top: 30px;
+    border: none;
+    border-radius: 25px;
+    background: lightgreen;
+    cursor: pointer;
+    transition: .2s;
+}
+
+input:hover {
+    border: 1px solid lightgrey;
+}
+
+input:focus-visible {
+    border: 1px solid lightgreen;
+}
+
+button:hover {
+    opacity: 70%;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    display: block;
+    width: 550px;
+    height: 325px;
+    margin: 125px auto;
+    padding: 20px;
+    box-shadow: -1px 5px 31px -11px rgba(0,0,0,0.7);
+    border-radius: 8px;
+    background: white;
+}
+
+.control-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 390px;
+    padding: 10px 0;
+}
+
+.control-group:nth-child(3) {
+    margin-bottom: 15px;
+}
+
+.rebut {
+    display: block;
+    text-align: center;
+}
+
+
+
+
+
+
