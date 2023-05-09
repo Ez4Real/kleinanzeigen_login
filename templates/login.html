@@ -18,7 +18,9 @@
         <h1>Log in</h1>
         <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
-            <div class="control-group">
+            {{ form }}
+            <button type="submit">Einloggen</button>
+            <!-- <div class="control-group">
                 <label for="email">Email:</label>
                 <input type="email" name="email" id="email" required>
             </div>
@@ -28,7 +30,7 @@
             </div>
             <a href="#">Passwort vergessen?</a>
             <div class="g-recaptcha g-style" data-sitekey="your_site_key"></div>
-            <input type="submit" value="Login">
+            <input type="submit" value="Login"> -->
         </form>
     </div>
 
