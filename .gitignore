@@ -141,3 +141,6 @@ GitHub.sublime-settings
 *.png
 *.svg
 *.gif
+
+*mp3
+*wav

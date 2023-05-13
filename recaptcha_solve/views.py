@@ -1,4 +1,6 @@
+import requests
 import time
+import os
 
 from django.shortcuts import render
 from django.views import View
@@ -15,6 +17,10 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from .forms import LoginForm
 
+import urllib.request
+
+import speech_recognition as sr
+from pydub import AudioSegment
 
 
 def find_element(driver: webdriver.Chrome,
@@ -54,12 +60,8 @@ class LoginView(View):
 
             # configure selenium webdriver
             page_url = settings.LOGIN_PAGE_URL
-            # page_url = 'https://www.google.com/recaptcha/api2/demo'
             
-    
-            driver = webdriver.Chrome(keep_alive=True)
-            
-            driver = webdriver.Edge(keep_alive=True)
+            driver = webdriver.Firefox(keep_alive=True)
             driver.get(page_url)
 
             # Close modals
@@ -83,26 +85,43 @@ class LoginView(View):
             
             driver.switch_to.default_content()
             frame = driver.find_element(By.XPATH, "//iframe[@title='reCAPTCHA-Aufgabe läuft in zwei Minuten ab']")
-            # frame = driver.find_element(By.XPATH, "//iframe[@title='текущую проверку reCAPTCHA можно пройти в течение ещё двух минут']")
             frames.append(frame)
             
             driver.switch_to.frame(frame)
             
             button_click(driver, By.CLASS_NAME, 'rc-button-audio')
-            time.sleep(3)
+            time.sleep(2)
             
             
             button_click(driver, By.CLASS_NAME, 'rc-button-default')
-            time.sleep(3)
+            time.sleep(2)
             
-            audiofile_path = find_element(driver, By.CLASS_NAME, 'rc-audiochallenge-tdownload-link')
+            url = find_element(driver, By.CLASS_NAME, 'rc-audiochallenge-tdownload-link').get_attribute('href')
+
+            response = requests.get(url)
+            audio_path = "audio.mp3"
+            wav_path = "audio.wav"
+            with open(audio_path, "wb") as f:
+                f.write(response.content)
+                
+            AudioSegment.converter = 'C:/ProgramData/chocolatey/bin/ffmpeg.exe'
+            audio = AudioSegment.from_mp3(settings.BASE_DIR / 'audio.mp3')
             
+
+            # Export the audio file in WAV format
+            audio.export(wav_path, format="wav")
             
+            r = sr.Recognizer()
+            with sr.AudioFile(wav_path) as source:
+                audio = r.record(source)
+            text = r.recognize_google(audio)
+            
+            print('\n', text)
             
             # button_click(driver, By.ID, 'login-submit')
             
             # wait for the next page to load
-            WebDriverWait(driver, 10).until(EC.url_contains('https://www.kleinanzeigen.de/m-meins.html'))
+            # WebDriverWait(driver, 10).until(EC.url_contains('https://www.kleinan zeigen.de/m-meins.html'))
 
         return render(request, self.template_name, {'form': form})
         
