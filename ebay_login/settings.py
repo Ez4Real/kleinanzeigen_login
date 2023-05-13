@@ -25,10 +25,7 @@ load_dotenv(dotenv_path)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-<<<<<<< HEAD
 
-=======
->>>>>>> 873d6ff9c293a0f1bf375b493e66acc71df0029c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -127,3 +124,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 2Captcha accessment
+API_KEY = os.getenv('API_KEY')
+
+
+LOGIN_PAGE_URL = 'https://www.kleinanzeigen.de/m-einloggen.html'
+DATA_SITE_KEY = os.getenv('DATA_SITE_KEY')

@@ -18,23 +18,18 @@
         <h1>Log in</h1>
         <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
-            {{ form }}
-            <button type="submit">Einloggen</button>
-            <!-- <div class="control-group">
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="email" required>
+            <div class="control-group">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {{ form.email }}
             </div>
             <div class="control-group">
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required>
+                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                {{ form.password }}
             </div>
-            <div class="rebut"><a href="https://www.kleinanzeigen.de/m-passwort-vergessen.html">Passwort vergessen?</a></div>
-            <div class="g-recaptcha g-style" data-sitekey="your_site_key"></div>
-<<<<<<< HEAD
-            <input type="submit" value="Login"> -->
-=======
-            <button type="submit" value="Login">Login</button>
->>>>>>> 873d6ff9c293a0f1bf375b493e66acc71df0029c
+            <div class="rebut">
+                <a href="https://www.kleinanzeigen.de/m-passwort-vergessen.html">Passwort vergessen?</a>
+            </div>
+            <button type="submit">Einloggen</button>
         </form>
     </div>
 
