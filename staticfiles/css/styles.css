@@ -94,6 +94,53 @@ a:hover {
     text-align: center;
 }
 
+.download {
+    background-image: url('https://www.gstatic.com/recaptcha/api2/download.png');
+    background-repeat: no-repeat;
+    -webkit-background-size: 36px;
+    -o-background-size: 36px;
+    background-size: 36px;
+    color: transparent;
+    display: inline-block;
+    height: 36px;
+    opacity: .55;
+    overflow: hidden;
+    width: 36px;
+}
+
+.messages {
+    list-style-type: none;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.message {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* Success message */
+.message-success {
+    background-color: #dff0d8;
+    border: 1px solid #d6e9c6;
+    color: #3c763d;
+}
+
+/* Error message */
+.message-error {
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    color: #a94442;
+}
+
+/* Warning message */
+.message-warning {
+    background-color: #fcf8e3;
+    border: 1px solid #faebcc;
+    color: #8a6d3b;
+}
+
 
 
 

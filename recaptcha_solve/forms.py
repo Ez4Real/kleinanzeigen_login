@@ -1,5 +1,8 @@
 from django import forms
 
-class LoginForm(forms.Form):
-    email = forms.EmailField(max_length=254, required=True)
-    password = forms.CharField(max_length=50, widget=forms.PasswordInput, required=True)
+class reCAPTCHA(forms.Form):
+    captcha_key = forms.CharField(
+        max_length=254,
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter the words you heard.'})
+    )

@@ -14,20 +14,25 @@
 
 <body>
 
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <div class="container">
         <h1>Log in</h1>
         <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
             <div class="control-group">
-                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-                {{ form.email }}
+                <label>Donwload MP3-file</label>
+                <a class="download" href="{% url 'download-audio' %}"></a>
             </div>
             <div class="control-group">
-                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
-                {{ form.password }}
-            </div>
-            <div class="rebut">
-                <a href="https://www.kleinanzeigen.de/m-passwort-vergessen.html">Passwort vergessen?</a>
+                <label for="{{ form.captcha_key.id_for_label }}">{{ form.captcha_key.label }}</label>
+                {{ form.captcha_key }}
             </div>
             <button type="submit">Einloggen</button>
         </form>

@@ -96,6 +96,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -129,5 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 API_KEY = os.getenv('API_KEY')
 
 
-LOGIN_PAGE_URL = 'https://www.kleinanzeigen.de/m-einloggen.html'
+LOGIN_PAGE_URL = 'https://www.google.com/recaptcha/api2/demo'
 DATA_SITE_KEY = os.getenv('DATA_SITE_KEY')
+
+FFMPEG_PATH = 'C:/ProgramData/chocolatey/bin/ffmpeg.exe'
