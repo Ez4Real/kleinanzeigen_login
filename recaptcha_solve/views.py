@@ -8,6 +8,7 @@ from django.views import View
 from django.conf import settings
 from django.http import HttpResponse
 from django.contrib import messages
+from django.core.cache import cache
 
 from recaptcha_solve.forms import reCAPTCHA
 
@@ -17,7 +18,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.common.keys import Keys
 
 from selenium_stealth import stealth
 import speech_recognition as sr
@@ -59,21 +59,30 @@ def speech_recognition(audio_file) -> str:
         audio = r.record(source)
     return r.recognize_google(audio, language='en-EN')
 
+class Chromchik():
+    def __init__(self) -> None:
+        options = webdriver.ChromeOptions()
+        options.add_argument("start-maximized")
+        # options.add_argument("--headless")  
+        # ???
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        self.driver = webdriver.Chrome(options=options)
+        
+
 class KleinanzeigenLogin(View):
+    def __init__(self):
+        self.html_content = None
+        self.cookies = None
 
     def get(self, request):
         
         page_url = settings.LOGIN_PAGE_URL
 
         # Load the website and perform necessary actions
-        options = webdriver.ChromeOptions()
-        options.add_argument("start-maximized")
-        # options.add_argument("--headless")  
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option('useAutomationExtension', False)
-        driver = webdriver.Chrome(options=options)
+        chrome = Chromchik()
         
-        stealth(driver,
+        stealth(chrome.driver,
                 languages=["en-US", "en"],
                 vendor="Google Inc.",
                 platform="Win32",
@@ -81,80 +90,74 @@ class KleinanzeigenLogin(View):
                 renderer="Intel Iris OpenGL Engine",
                 fix_hairline=True,
                )
-        # driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 't')
-        driver.get(page_url)
-        
+        # chrome.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 't')
+        chrome.driver.get(page_url)
         delay()
         
         # Close Kleinanzeigen modals
-        # button_click(driver, By.CLASS_NAME, 'Button-secondary')
-        # button_click(driver, By.ID, 'gdpr-banner-accept')
+        # button_click(chrome.driver, By.CLASS_NAME, 'Button-secondary')
+        # button_click(chrome.driver, By.ID, 'gdpr-banner-accept')
         
         # Perform actions required to reach the audio captcha page
-        frames = driver.find_elements(By.TAG_NAME, "iframe")
+        frames = chrome.driver.find_elements(By.TAG_NAME, "iframe")
         
-        driver.switch_to.frame(frames[0])
-        button_click(driver, By.CLASS_NAME, 'recaptcha-checkbox')
-        
+        chrome.driver.switch_to.frame(frames[0])
+        button_click(chrome.driver, By.CLASS_NAME, 'recaptcha-checkbox')
         delay()
         
-        driver.switch_to.default_content()
-        driver.switch_to.frame(frames[2])
-        button_click(driver, By.CLASS_NAME, 'rc-button-audio')
-        
+        chrome.driver.switch_to.default_content()
+        chrome.driver.switch_to.frame(frames[2])
+        button_click(chrome.driver, By.CLASS_NAME, 'rc-button-audio')
         delay()
         
         # Get reCAPTCHA audio file
-        audio_el = find_element(driver, By.CLASS_NAME, 'rc-audiochallenge-tdownload-link')
+        audio_el = find_element(chrome.driver, By.CLASS_NAME, 'rc-audiochallenge-tdownload-link')
         response = requests.get(audio_el.get_attribute('href'))
-        
         delay()
-        
+    
         mp3_path = 'audio.mp3'
         wav_path = 'audio.wav'
-        
         download_audiofile(response, mp3_path)
+        delay()
+        
         AudioSegment.converter = settings.FFMPEG_PATH
         convert_to_wav(mp3_path, wav_path)
-        request.session['recognized_text'] = speech_recognition(wav_path)
-
-        # Save the HTML page
-        html_content = driver.page_source
-        cookies = driver.get_cookies()
+        recognized_text = speech_recognition(wav_path)
+        cache.set('recognized_text', recognized_text.lower())
         
-        driver.quit()
+        
+        print('\n', recognized_text, '\n')
+
+        delay()
+        
+        # Save the HTML page and cookies
+        chrome.driver.switch_to.default_content()
+        cache.set('html_content', chrome.driver.page_source)
+        # cache.set('cookies', chrome.driver.get_cookies())
+        
+        chrome.driver.quit()
         
         return render(request, 'login.html', 
                       {'form': reCAPTCHA()})
 
-        # # Pass the audio file and captcha form to the template
-        # context = {
-        #     'audio_url': 1,
-        #     'captcha_form': 2  # Replace YourForm with your actual form class
-        # }
-        
-        # Load a URL in the new tab
-        # driver.get(page_url)
-        
-        # page_source = driver.page_source
-        
-        # # Quit the WebDriver
-        # driver.quit()
-        
-        # return HttpResponse(page_source, content_type='text/html')
-
     def post(self, request):
         form = reCAPTCHA(request.POST)
-        
-        recognized_text = request.session.get('recognized_text')
+        recognized_text = cache.get('recognized_text')
+        html_content = cache.get('html_content')
+        # cookies = cache.get('cookies')
         
         if form.is_valid():
             captcha_key = form.cleaned_data['captcha_key']
             
-            print('\n', recognized_text, '\n')
-            
-            if captcha_key.lower() == recognized_text.lower():
+            if captcha_key.lower() == recognized_text:
                 messages.success(request, 'Success! Captcha key is correct.')
+                
+                # response.cookies.update(cookies)
+                return HttpResponse(html_content, content_type='text/html')
+                
+                
+                # return response
+            
             else:
                 messages.error(request, 'Error! Captcha key is incorrect.')
         
