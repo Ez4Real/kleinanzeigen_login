@@ -2,7 +2,6 @@ import time
 import requests
 import os
 
-
 from django.shortcuts import render
 from django.views import View
 from django.conf import settings
@@ -11,6 +10,7 @@ from django.contrib import messages
 from django.core.cache import cache
 
 from recaptcha_solve.forms import reCAPTCHA
+from http.cookies import SimpleCookie
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -69,6 +69,9 @@ class Chromchik():
         options.add_experimental_option('useAutomationExtension', False)
         self.driver = webdriver.Chrome(options=options)
         
+    def get_cookies(self):
+        return self.driver.get_cookies()
+        
 
 class KleinanzeigenLogin(View):
     def __init__(self):
@@ -78,6 +81,18 @@ class KleinanzeigenLogin(View):
     def get(self, request):
         
         page_url = settings.LOGIN_PAGE_URL
+        
+        # chrome_options = webdriver.ChromeOptions()
+        # # chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+
+        # # Load the website and perform necessary actions
+        # chrome_driver = webdriver.Chrome(options=chrome_options)
+        # chrome_driver.get(page_url)
+        
+        # cookies = chrome_driver.get_cookies()
+        # print('\n', cookies, '\n')
+        
+        # chrome_driver.quit()
 
         # Load the website and perform necessary actions
         chrome = Chromchik()
@@ -92,6 +107,16 @@ class KleinanzeigenLogin(View):
                )
         # chrome.driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 't')
         chrome.driver.get(page_url)
+        
+        
+        # Save the HTML page and cookies
+        cache.set('html_content', chrome.driver.page_source)
+        
+        print(chrome.get_cookies())
+        # cache.set('cookies', chrome.driver.get_cookies())
+        # cookies = chrome.driver.get_cookies()
+        # print('\n', cookies, '\n')
+        
         delay()
         
         # Close Kleinanzeigen modals
@@ -125,15 +150,9 @@ class KleinanzeigenLogin(View):
         recognized_text = speech_recognition(wav_path)
         cache.set('recognized_text', recognized_text.lower())
         
-        
         print('\n', recognized_text, '\n')
 
         delay()
-        
-        # Save the HTML page and cookies
-        chrome.driver.switch_to.default_content()
-        cache.set('html_content', chrome.driver.page_source)
-        # cache.set('cookies', chrome.driver.get_cookies())
         
         chrome.driver.quit()
         
@@ -143,8 +162,15 @@ class KleinanzeigenLogin(View):
     def post(self, request):
         form = reCAPTCHA(request.POST)
         recognized_text = cache.get('recognized_text')
+        
         html_content = cache.get('html_content')
+        html_content = html_content.replace('<script src="/recaptcha/api.js" async="" defer="" nonce=""></script>', '')
+        # print('\n', html_content, '\n')
+        
         # cookies = cache.get('cookies')
+        cookies = cache.get('cookies')
+        print('\n', cookies, '\n')
+        
         
         if form.is_valid():
             captcha_key = form.cleaned_data['captcha_key']
@@ -152,11 +178,11 @@ class KleinanzeigenLogin(View):
             if captcha_key.lower() == recognized_text:
                 messages.success(request, 'Success! Captcha key is correct.')
                 
+                delay()
+                response = HttpResponse(html_content, content_type='text/html')
                 # response.cookies.update(cookies)
-                return HttpResponse(html_content, content_type='text/html')
                 
-                
-                # return response
+                return response
             
             else:
                 messages.error(request, 'Error! Captcha key is incorrect.')
