@@ -164,12 +164,11 @@ class KleinanzeigenLogin(View):
         recognized_text = cache.get('recognized_text')
         
         html_content = cache.get('html_content')
-        html_content = html_content.replace('<script src="/recaptcha/api.js" async="" defer="" nonce=""></script>', '')
+        html_content = html_content.replace('src="/recaptcha/api.js"', 'src="https://www.google.com/recaptcha/api.js"')
         # print('\n', html_content, '\n')
         
         # cookies = cache.get('cookies')
-        cookies = cache.get('cookies')
-        print('\n', cookies, '\n')
+        # print('\n', cookies, '\n')
         
         
         if form.is_valid():
@@ -183,7 +182,7 @@ class KleinanzeigenLogin(View):
                 # response.cookies.update(cookies)
                 
                 return response
-            
+                # return render(request, 'captcha.html', {})
             else:
                 messages.error(request, 'Error! Captcha key is incorrect.')
         
