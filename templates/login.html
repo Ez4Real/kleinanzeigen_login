@@ -10,19 +10,9 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Kleinanzeigen Log in</title>
 
-    <script src="{% static 'js/messageDissapear.js' %}"></script>
-
 </head>
 
 <body>
-
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li class="message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
 
     <div class="container">
         <h1>Log in</h1>

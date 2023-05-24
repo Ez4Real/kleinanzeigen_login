@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
     
     'recaptcha_solve',
@@ -103,7 +102,7 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'captcha-key',
+        'LOCATION': 'window-handle',
     }
 }
 
@@ -135,12 +134,4 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# 2Captcha accessment
-API_KEY = os.getenv('API_KEY')
-
-
 LOGIN_PAGE_URL = 'https://www.google.com/recaptcha/api2/demo'
-DATA_SITE_KEY = os.getenv('DATA_SITE_KEY')
-
-FFMPEG_PATH = 'C:/ProgramData/chocolatey/bin/ffmpeg.exe'
